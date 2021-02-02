@@ -413,6 +413,17 @@ When using this option, be sure to gitignore the wordpress-cache directory in th
             },
           `),
       }),
+    headers: Joi.object()
+      .allow(null)
+      .default(null)
+      .description(`Options related to request http headers during build.`),
+      .meta({
+        example: wrapOptions(`
+          headers: {
+            // Add your options here :)
+          },
+        `),
+      }),
     schema: Joi.object({
       queryDepth: Joi.number()
         .integer()

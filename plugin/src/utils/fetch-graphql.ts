@@ -418,10 +418,12 @@ ${slackChannelSupportMessage}`
   )
   const limit = pluginOptions?.schema?.requestConcurrency
 
+  const additionalHeaders = typeof pluginOptions.headers === 'function' ? await pluginOptions.headers() : pluginOptions.headers;
+
   if (responseReturnedHtml && isFirstRequest) {
     const requestOptions: AxiosRequestConfig = {
       timeout,
-      headers,
+      headers: { ...headers, ...additionalHeaders },
     }
 
     if (!missingCredentials) {
@@ -634,12 +636,14 @@ const fetchGraphql = async ({
   const missingCredentials =
     !htaccessCredentials.password || !htaccessCredentials.username
 
+  const additionalHeaders = typeof pluginOptions.headers === 'function' ? await pluginOptions.headers() : pluginOptions.headers;
+
   let response: AxiosResponse
 
   try {
     const requestOptions: AxiosRequestConfig = {
       timeout,
-      headers,
+      headers: { ...headers, ...additionalHeaders },
     }
 
     if (!missingCredentials) {

@@ -297,20 +297,23 @@ export const createRemoteMediaItemNode = async ({
 
       // if media items are hosted on another url like s3,
       // using the htaccess creds will throw 400 errors
-      const shouldUseHtaccessCredentials = wpUrlHostname === mediaItemHostname
+      const isWpMedia = wpUrlHostname === mediaItemHostname
 
       const auth =
-        htaccessCredentials && shouldUseHtaccessCredentials
+        htaccessCredentials && isWpMedia
           ? {
               htaccess_pass: htaccessCredentials?.password,
               htaccess_user: htaccessCredentials?.username,
             }
           : null
 
+      const httpHeaders = isWpMedia ? (typeof pluginOptions.headers ? await pluginOptions.headers() : pluginOptions.headers) : {}
+
       // if this errors, it's caught one level above in fetch-referenced-media-items.js so it can be placed on the end of the request queue
       const node = await createRemoteFileNode({
         url: mediaItemUrl,
         auth,
+        httpHeaders,
         ...createFileNodeRequirements,
       })
 

@@ -3,6 +3,7 @@ import Range from "semver/classes/range"
 
 import type { NodePluginArgs } from "gatsby"
 import fetch from "node-fetch"
+import btoa from "btoa"
 
 import fetchGraphql from "~/utils/fetch-graphql"
 import { formatLogMessage } from "~/utils/format-log-message"
@@ -286,6 +287,8 @@ const ensurePluginRequirementsAreMet = async (
     gatsbyApi: {
       pluginOptions: {
         url,
+        auth,
+        headers,
         debug: { disableCompatibilityCheck },
       },
     },
@@ -304,7 +307,13 @@ const ensurePluginRequirementsAreMet = async (
     return
   }
 
-  await blankGetRequest({ url, helpers })
+  if (auth?.htaccess_pass && auth?.htaccess_user) {
+    headers[`Authorization`] = `Basic ${btoa(
+      `${auth.htaccess_user}:${auth.htaccess_pass}`
+    )}`
+  }
+
+  await blankGetRequest({ url, headers, helpers })
   await isWpGatsby()
 
   await Promise.all([
